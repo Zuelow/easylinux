@@ -16,13 +16,13 @@ You can rebase any Fedora Atomic installation to EasyLinux:
 
 ```bash
 # First, rebase to the unsigned image to get the keys
-rpm-ostree rebase ostree-unverified-registry:ghcr.io/YOUR_USERNAME/easylinux:latest
+rpm-ostree rebase ostree-unverified-registry:ghcr.io/zuelow/easylinux:latest
 
 # Reboot
 systemctl reboot
 
 # Then rebase to the signed image
-rpm-ostree rebase ostree-image-signed:docker://ghcr.io/YOUR_USERNAME/easylinux:latest
+rpm-ostree rebase ostree-image-signed:docker://ghcr.io/zuelow/easylinux:latest
 
 # Reboot again
 systemctl reboot
