@@ -1,16 +1,16 @@
 # yaml-language-server: $schema=https://schema.blue-build.org/recipe-v1.json
-# EasyLinux - A beginner-friendly Fedora Atomic distribution
-# Danish localization | Repair Cafe themed
+# EasyLinux - Repair Cafe Edition
+# A beginner-friendly Fedora Atomic distribution for repair cafes and maker spaces
 
 name: easylinux
-description: A beginner-friendly Linux distribution inspired by SteamOS - Repair Cafe edition
+description: A beginner-friendly Linux distribution - Repair Cafe Edition
 
 base-image: ghcr.io/ublue-os/kinoite-main
 image-version: latest
 
 modules:
   # ============================================
-  # PACKAGE MANAGEMENT
+  # SYSTEM PACKAGES
   # ============================================
   - type: rpm-ostree
     install:
@@ -18,33 +18,41 @@ modules:
       - glibc-langpack-da
       - langpacks-da
 
-      # Useful CLI tools
+      # CLI tools
       - htop
       - fastfetch
       - fish
+      - vim-enhanced
+      - git
 
       # Hardware support
       - fwupd
 
-      # Gaming support
+      # Gaming
       - gamescope
       - mangohud
+
+      # Theming
+      - papirus-icon-theme
+
+      # Plymouth boot splash
+      - plymouth-theme-spinner
 
   # ============================================
   # BRANDING & CUSTOMIZATION
   # ============================================
   - type: containerfile
     snippets:
-      # Download and install EasyLinux wallpapers
+      # Download wallpapers from Unsplash
       - |
         RUN mkdir -p /usr/share/backgrounds/easylinux && \
-            curl -L "https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=3840&q=90" -o /usr/share/backgrounds/easylinux/workshop-tools.jpg && \
-            curl -L "https://images.unsplash.com/photo-1530124566582-a618bc2615dc?w=3840&q=90" -o /usr/share/backgrounds/easylinux/electronics-repair.jpg && \
-            curl -L "https://images.unsplash.com/photo-1504148455328-c376907d081c?w=3840&q=90" -o /usr/share/backgrounds/easylinux/soldering-work.jpg && \
-            curl -L "https://images.unsplash.com/photo-1572981779307-38b8cabb2407?w=3840&q=90" -o /usr/share/backgrounds/easylinux/vintage-tools.jpg && \
+            curl -sL "https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=3840&q=90" -o /usr/share/backgrounds/easylinux/workshop-tools.jpg && \
+            curl -sL "https://images.unsplash.com/photo-1530124566582-a618bc2615dc?w=3840&q=90" -o /usr/share/backgrounds/easylinux/electronics-repair.jpg && \
+            curl -sL "https://images.unsplash.com/photo-1504148455328-c376907d081c?w=3840&q=90" -o /usr/share/backgrounds/easylinux/soldering-work.jpg && \
+            curl -sL "https://images.unsplash.com/photo-1572981779307-38b8cabb2407?w=3840&q=90" -o /usr/share/backgrounds/easylinux/vintage-tools.jpg && \
             chmod 644 /usr/share/backgrounds/easylinux/*.jpg
 
-      # Set Danish defaults and EasyLinux branding
+      # Danish locale and timezone
       - |
         RUN echo "LANG=da_DK.UTF-8" > /etc/locale.conf && \
             echo "KEYMAP=dk" > /etc/vconsole.conf && \
@@ -52,14 +60,27 @@ modules:
             mkdir -p /etc/X11/xorg.conf.d && \
             printf 'Section "InputClass"\n    Identifier "system-keyboard"\n    MatchIsKeyboard "on"\n    Option "XkbLayout" "dk"\nEndSection\n' > /etc/X11/xorg.conf.d/00-keyboard.conf
 
-      # Configure KDE Plasma defaults for new users
+      # KDE Plasma defaults - Dark theme, Papirus icons, custom wallpaper
       - |
-        RUN mkdir -p /etc/skel/.config && \
+        RUN mkdir -p /etc/skel/.config /etc/skel/.local/share/color-schemes && \
             printf '[Layout]\nLayoutList=dk\nModel=pc105\nUse=true\n' > /etc/skel/.config/kxkbrc && \
-            mkdir -p /etc/skel/.config/plasma-org.kde.plasma.desktop-appletsrc.d && \
-            printf '[Containments][1][Wallpaper][org.kde.image][General]\nImage=/usr/share/backgrounds/easylinux/workshop-tools.jpg\n' > /etc/skel/.config/plasmarc
+            printf '[General]\nColorScheme=BreezeDark\n\n[Icons]\nTheme=Papirus-Dark\n' > /etc/skel/.config/kdeglobals && \
+            printf '[Theme]\nname=breeze-dark\n' > /etc/skel/.config/plasmarc && \
+            mkdir -p /etc/skel/.config/autostart
 
-      # Create EasyLinux os-release branding
+      # Configure SDDM login screen with custom background
+      - |
+        RUN mkdir -p /etc/sddm.conf.d && \
+            printf '[Theme]\nCurrent=breeze\n\n[General]\nInputMethod=\n' > /etc/sddm.conf.d/easylinux.conf && \
+            mkdir -p /usr/share/sddm/themes/breeze/easylinux && \
+            ln -sf /usr/share/backgrounds/easylinux/workshop-tools.jpg /usr/share/sddm/themes/breeze/easylinux/background.jpg
+
+      # Configure Plymouth boot splash
+      - |
+        RUN plymouth-set-default-theme spinner && \
+            dracut -f /boot/initramfs-$(rpm -q --qf '%{VERSION}-%{RELEASE}.%{ARCH}' kernel-core).img $(rpm -q --qf '%{VERSION}-%{RELEASE}.%{ARCH}' kernel-core) 2>/dev/null || true
+
+      # OS release branding
       - |
         RUN sed -i 's/PRETTY_NAME=.*/PRETTY_NAME="EasyLinux (Repair Cafe Edition)"/' /usr/lib/os-release && \
             sed -i 's/NAME=.*/NAME="EasyLinux"/' /usr/lib/os-release && \
@@ -78,14 +99,37 @@ modules:
           url: https://dl.flathub.org/repo/flathub.flatpakrepo
         notify: true
         install:
+          # Essential apps
           - org.mozilla.firefox
           - org.libreoffice.LibreOffice
           - org.videolan.VLC
           - org.gnome.Calculator
           - org.kde.okular
+
+          # Communication
           - com.spotify.Client
           - md.obsidian.Obsidian
           - org.signal.Signal
           - com.discordapp.Discord
+
+          # Gaming
           - com.valvesoftware.Steam
+
+          # Utilities
           - io.github.flattool.Warehouse
+          - com.github.tchx84.Flatseal
+
+          # ===== REPAIR CAFE / MAKER APPS =====
+          # Electronics design
+          - org.kicad.KiCad
+
+          # 3D modeling & CAD
+          - org.freecadweb.FreeCAD
+          - org.blender.Blender
+
+          # Graphics & design
+          - org.gimp.GIMP
+          - org.inkscape.Inkscape
+
+          # Document scanning
+          - org.gnome.SimpleScan
