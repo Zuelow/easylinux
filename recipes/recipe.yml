@@ -39,7 +39,7 @@ modules:
       - plymouth-theme-spinner
 
   # ============================================
-  # BRANDING & CUSTOMIZATION
+  # BRANDING & THEMES
   # ============================================
   - type: containerfile
     snippets:
@@ -52,6 +52,26 @@ modules:
             curl -sL "https://images.unsplash.com/photo-1572981779307-38b8cabb2407?w=3840&q=90" -o /usr/share/backgrounds/easylinux/vintage-tools.jpg && \
             chmod 644 /usr/share/backgrounds/easylinux/*.jpg
 
+      # Install Vapor theme (Steam Deck style) - without logos
+      - |
+        RUN mkdir -p /usr/share/color-schemes /usr/share/plasma/desktoptheme/Vapor /usr/share/plasma/look-and-feel/com.easylinux.vapor/contents/previews && \
+            curl -sL "https://steamdeck-packages.steamos.cloud/archlinux-mirror/jupiter-main/os/x86_64/steamdeck-kde-presets-0.29-1-any.pkg.tar.zst" -o /tmp/steamdeck.tar.zst && \
+            zstd -d /tmp/steamdeck.tar.zst && \
+            tar -xf /tmp/steamdeck.tar -C /tmp && \
+            cp /tmp/usr/share/color-schemes/Vapor.colors /usr/share/color-schemes/ && \
+            cp /tmp/usr/share/plasma/desktoptheme/Vapor/* /usr/share/plasma/desktoptheme/Vapor/ && \
+            rm -rf /tmp/steamdeck* /tmp/usr /tmp/etc
+
+      # Create EasyLinux Vapor look-and-feel (without Steam branding)
+      - |
+        RUN mkdir -p /usr/share/plasma/look-and-feel/com.easylinux.vapor/contents && \
+            printf '{\n  "KPackageStructure": "Plasma/LookAndFeel",\n  "KPlugin": {\n    "Id": "com.easylinux.vapor",\n    "Name": "EasyLinux Vapor",\n    "Description": "Steam Deck inspired theme for EasyLinux"\n  }\n}\n' > /usr/share/plasma/look-and-feel/com.easylinux.vapor/metadata.json && \
+            printf '[kdeglobals][General]\nColorScheme=Vapor\n\n[kdeglobals][Icons]\nTheme=Papirus-Dark\n\n[kdeglobals][KDE]\nLookAndFeelPackage=com.easylinux.vapor\n\n[plasmarc][Theme]\nname=Vapor\n' > /usr/share/plasma/look-and-feel/com.easylinux.vapor/contents/defaults
+
+      # Install Redmond 2K color scheme (Windows 2000 style)
+      - |
+        RUN printf '[ColorEffects:Disabled]\nColor=56,56,56\nColorAmount=0\nColorEffect=0\nContrastAmount=0.65\nContrastEffect=1\nIntensityAmount=0.1\nIntensityEffect=2\n\n[ColorEffects:Inactive]\nChangeSelectionColor=true\nColor=112,111,110\nColorAmount=0.025\nColorEffect=2\nContrastAmount=0.1\nContrastEffect=2\nEnable=false\n\n[Colors:Button]\nBackgroundAlternate=212,208,200\nBackgroundNormal=212,208,200\nDecorationFocus=0,0,128\nDecorationHover=10,36,106\nForegroundActive=0,0,0\nForegroundInactive=128,128,128\nForegroundLink=0,0,255\nForegroundNegative=255,0,0\nForegroundNeutral=255,128,0\nForegroundNormal=0,0,0\nForegroundPositive=0,128,0\nForegroundVisited=128,0,128\n\n[Colors:Selection]\nBackgroundAlternate=10,36,106\nBackgroundNormal=10,36,106\nDecorationFocus=10,36,106\nDecorationHover=10,36,106\nForegroundActive=255,255,255\nForegroundInactive=255,255,255\nForegroundLink=255,255,0\nForegroundNegative=255,0,0\nForegroundNeutral=255,128,0\nForegroundNormal=255,255,255\nForegroundPositive=0,255,0\nForegroundVisited=255,128,255\n\n[Colors:Tooltip]\nBackgroundAlternate=255,255,225\nBackgroundNormal=255,255,225\nForegroundNormal=0,0,0\n\n[Colors:View]\nBackgroundAlternate=245,245,245\nBackgroundNormal=255,255,255\nDecorationFocus=0,0,128\nDecorationHover=10,36,106\nForegroundActive=0,0,0\nForegroundInactive=128,128,128\nForegroundLink=0,0,255\nForegroundNegative=255,0,0\nForegroundNeutral=255,128,0\nForegroundNormal=0,0,0\nForegroundPositive=0,128,0\nForegroundVisited=128,0,128\n\n[Colors:Window]\nBackgroundAlternate=212,208,200\nBackgroundNormal=212,208,200\nDecorationFocus=0,0,128\nDecorationHover=10,36,106\nForegroundActive=0,0,0\nForegroundInactive=128,128,128\nForegroundLink=0,0,255\nForegroundNegative=255,0,0\nForegroundNeutral=255,128,0\nForegroundNormal=0,0,0\nForegroundPositive=0,128,0\nForegroundVisited=128,0,128\n\n[General]\nColorScheme=Redmond2K\nName=Redmond 2K\nshadeSortColumn=true\n\n[WM]\nactiveBackground=10,36,106\nactiveBlend=255,255,255\nactiveForeground=255,255,255\ninactiveBackground=128,128,128\ninactiveBlend=128,128,128\ninactiveForeground=212,208,200\n' > /usr/share/color-schemes/Redmond2K.colors
+
       # Danish locale and timezone
       - |
         RUN echo "LANG=da_DK.UTF-8" > /etc/locale.conf && \
@@ -60,25 +80,21 @@ modules:
             mkdir -p /etc/X11/xorg.conf.d && \
             printf 'Section "InputClass"\n    Identifier "system-keyboard"\n    MatchIsKeyboard "on"\n    Option "XkbLayout" "dk"\nEndSection\n' > /etc/X11/xorg.conf.d/00-keyboard.conf
 
-      # KDE Plasma defaults - Dark theme, Papirus icons, custom wallpaper
+      # KDE Plasma defaults - Vapor theme, Papirus icons
       - |
-        RUN mkdir -p /etc/skel/.config /etc/skel/.local/share/color-schemes && \
+        RUN mkdir -p /etc/skel/.config && \
             printf '[Layout]\nLayoutList=dk\nModel=pc105\nUse=true\n' > /etc/skel/.config/kxkbrc && \
-            printf '[General]\nColorScheme=BreezeDark\n\n[Icons]\nTheme=Papirus-Dark\n' > /etc/skel/.config/kdeglobals && \
-            printf '[Theme]\nname=breeze-dark\n' > /etc/skel/.config/plasmarc && \
-            mkdir -p /etc/skel/.config/autostart
+            printf '[General]\nColorScheme=Vapor\n\n[Icons]\nTheme=Papirus-Dark\n' > /etc/skel/.config/kdeglobals && \
+            printf '[Theme]\nname=Vapor\n' > /etc/skel/.config/plasmarc
 
-      # Configure SDDM login screen with custom background
+      # Configure SDDM login screen
       - |
         RUN mkdir -p /etc/sddm.conf.d && \
-            printf '[Theme]\nCurrent=breeze\n\n[General]\nInputMethod=\n' > /etc/sddm.conf.d/easylinux.conf && \
-            mkdir -p /usr/share/sddm/themes/breeze/easylinux && \
-            ln -sf /usr/share/backgrounds/easylinux/workshop-tools.jpg /usr/share/sddm/themes/breeze/easylinux/background.jpg
+            printf '[Theme]\nCurrent=breeze\n\n[General]\nInputMethod=\n' > /etc/sddm.conf.d/easylinux.conf
 
       # Configure Plymouth boot splash
       - |
-        RUN plymouth-set-default-theme spinner && \
-            dracut -f /boot/initramfs-$(rpm -q --qf '%{VERSION}-%{RELEASE}.%{ARCH}' kernel-core).img $(rpm -q --qf '%{VERSION}-%{RELEASE}.%{ARCH}' kernel-core) 2>/dev/null || true
+        RUN plymouth-set-default-theme spinner 2>/dev/null || true
 
       # OS release branding
       - |
@@ -119,17 +135,10 @@ modules:
           - io.github.flattool.Warehouse
           - com.github.tchx84.Flatseal
 
-          # ===== REPAIR CAFE / MAKER APPS =====
-          # Electronics design
+          # Repair Cafe / Maker apps
           - org.kicad.KiCad
-
-          # 3D modeling & CAD
           - org.freecadweb.FreeCAD
           - org.blender.Blender
-
-          # Graphics & design
           - org.gimp.GIMP
           - org.inkscape.Inkscape
-
-          # Document scanning
           - org.gnome.SimpleScan
