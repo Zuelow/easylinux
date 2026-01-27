@@ -1,9 +1,9 @@
 # yaml-language-server: $schema=https://schema.blue-build.org/recipe-v1.json
 # EasyLinux - A beginner-friendly Fedora Atomic distribution
-# Danish localization included
+# Danish localization | Repair Cafe themed
 
 name: easylinux
-description: A beginner-friendly Linux distribution inspired by SteamOS
+description: A beginner-friendly Linux distribution inspired by SteamOS - Repair Cafe edition
 
 base-image: ghcr.io/ublue-os/kinoite-main
 image-version: latest
@@ -31,18 +31,40 @@ modules:
       - mangohud
 
   # ============================================
-  # DANISH LOCALIZATION
+  # BRANDING & CUSTOMIZATION
   # ============================================
   - type: containerfile
     snippets:
+      # Download and install EasyLinux wallpapers
+      - |
+        RUN mkdir -p /usr/share/backgrounds/easylinux && \
+            curl -L "https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=3840&q=90" -o /usr/share/backgrounds/easylinux/workshop-tools.jpg && \
+            curl -L "https://images.unsplash.com/photo-1530124566582-a618bc2615dc?w=3840&q=90" -o /usr/share/backgrounds/easylinux/electronics-repair.jpg && \
+            curl -L "https://images.unsplash.com/photo-1504148455328-c376907d081c?w=3840&q=90" -o /usr/share/backgrounds/easylinux/soldering-work.jpg && \
+            curl -L "https://images.unsplash.com/photo-1572981779307-38b8cabb2407?w=3840&q=90" -o /usr/share/backgrounds/easylinux/vintage-tools.jpg && \
+            chmod 644 /usr/share/backgrounds/easylinux/*.jpg
+
+      # Set Danish defaults and EasyLinux branding
       - |
         RUN echo "LANG=da_DK.UTF-8" > /etc/locale.conf && \
             echo "KEYMAP=dk" > /etc/vconsole.conf && \
             ln -sf /usr/share/zoneinfo/Europe/Copenhagen /etc/localtime && \
             mkdir -p /etc/X11/xorg.conf.d && \
-            echo 'Section "InputClass"\n    Identifier "system-keyboard"\n    MatchIsKeyboard "on"\n    Option "XkbLayout" "dk"\nEndSection' > /etc/X11/xorg.conf.d/00-keyboard.conf && \
-            mkdir -p /etc/skel/.config && \
-            echo '[Layout]\nLayoutList=dk\nModel=pc105\nUse=true' > /etc/skel/.config/kxkbrc
+            printf 'Section "InputClass"\n    Identifier "system-keyboard"\n    MatchIsKeyboard "on"\n    Option "XkbLayout" "dk"\nEndSection\n' > /etc/X11/xorg.conf.d/00-keyboard.conf
+
+      # Configure KDE Plasma defaults for new users
+      - |
+        RUN mkdir -p /etc/skel/.config && \
+            printf '[Layout]\nLayoutList=dk\nModel=pc105\nUse=true\n' > /etc/skel/.config/kxkbrc && \
+            mkdir -p /etc/skel/.config/plasma-org.kde.plasma.desktop-appletsrc.d && \
+            printf '[Containments][1][Wallpaper][org.kde.image][General]\nImage=/usr/share/backgrounds/easylinux/workshop-tools.jpg\n' > /etc/skel/.config/plasmarc
+
+      # Create EasyLinux os-release branding
+      - |
+        RUN sed -i 's/PRETTY_NAME=.*/PRETTY_NAME="EasyLinux (Repair Cafe Edition)"/' /usr/lib/os-release && \
+            sed -i 's/NAME=.*/NAME="EasyLinux"/' /usr/lib/os-release && \
+            echo 'VARIANT="Repair Cafe Edition"' >> /usr/lib/os-release && \
+            echo 'VARIANT_ID=repaircafe' >> /usr/lib/os-release
 
   # ============================================
   # DEFAULT FLATPAKS
