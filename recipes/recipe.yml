@@ -31,7 +31,7 @@ modules:
 
       # Useful CLI tools
       - htop
-      - neofetch
+      - fastfetch
       - fish
 
       # Hardware support
