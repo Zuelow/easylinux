@@ -30,7 +30,7 @@ jobs:
         id: registry
         run: echo "IMAGE_REGISTRY=ghcr.io/${GITHUB_REPOSITORY_OWNER,,}" >> $GITHUB_OUTPUT
 
-      - name: Build ISO with Calamares
+      - name: Build ISO
         uses: jasonn3/build-container-installer@main
         id: build
         with:
@@ -41,8 +41,8 @@ jobs:
           variant: Kinoite
           version: 43
           iso_name: easylinux-${{ inputs.image_tag }}.iso
-          # Use Calamares installer (more beginner-friendly than Anaconda)
-          installer: calamares
+          # Enable web UI for simpler installation experience
+          web_ui: true
 
       - name: Upload ISO as artifact
         uses: actions/upload-artifact@v4
