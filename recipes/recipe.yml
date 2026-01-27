@@ -6,7 +6,7 @@ name: easylinux
 description: A beginner-friendly Linux distribution inspired by SteamOS
 
 # Base image: Kinoite is Fedora Atomic with KDE Plasma
-# Using Universal Blue's image which includes better hardware support
+# Using Universal Blue's image which includes better hardware support and codecs
 base-image: ghcr.io/ublue-os/kinoite-main
 image-version: latest
 
@@ -16,19 +16,9 @@ modules:
   # PACKAGE MANAGEMENT
   # ============================================
   - type: rpm-ostree
-    # Add extra repositories
-    repos:
-      # RPM Fusion for multimedia codecs and extra software
-      - https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-%OS_VERSION%.noarch.rpm
-      - https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-%OS_VERSION%.noarch.rpm
-
     # Install packages into the base image
+    # Note: ublue base already includes multimedia codecs
     install:
-      # Multimedia codecs (important for beginners)
-      - ffmpeg
-      - gstreamer1-plugins-bad-free
-      - gstreamer1-plugins-ugly
-
       # Useful CLI tools
       - htop
       - fastfetch
@@ -37,13 +27,9 @@ modules:
       # Hardware support
       - fwupd
 
-      # Gaming support (like SteamOS)
-      - steam
+      # Gaming support
       - gamescope
       - mangohud
-
-      # Flatpak support (should already be there, but ensuring)
-      - flatpak
 
   # ============================================
   # DEFAULT FLATPAKS
@@ -64,6 +50,8 @@ modules:
         # Communication
         - org.signal.Signal
         - com.discordapp.Discord
+        # Gaming - Steam as Flatpak for better compatibility
+        - com.valvesoftware.Steam
       repo-url: https://dl.flathub.org/repo/flathub.flatpakrepo
       repo-name: flathub
       repo-title: Flathub
