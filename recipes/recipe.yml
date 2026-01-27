@@ -1,0 +1,90 @@
+# EasyLinux - A beginner-friendly Fedora Atomic distribution
+# Based on Kinoite (KDE Plasma) with immutable root filesystem
+
+name: easylinux
+description: A beginner-friendly Linux distribution inspired by SteamOS
+
+# Base image: Kinoite is Fedora Atomic with KDE Plasma
+# Using Universal Blue's image which includes better hardware support
+base-image: ghcr.io/ublue-os/kinoite-main
+image-version: latest
+
+# Build modules - executed in order
+modules:
+  # ============================================
+  # PACKAGE MANAGEMENT
+  # ============================================
+  - type: rpm-ostree
+    # Add extra repositories
+    repos:
+      # RPM Fusion for multimedia codecs and extra software
+      - https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-%OS_VERSION%.noarch.rpm
+      - https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-%OS_VERSION%.noarch.rpm
+
+    # Install packages into the base image
+    install:
+      # Multimedia codecs (important for beginners)
+      - ffmpeg
+      - gstreamer1-plugins-bad-free
+      - gstreamer1-plugins-ugly
+
+      # Useful CLI tools
+      - htop
+      - neofetch
+      - fish
+
+      # Hardware support
+      - fwupd
+
+      # Gaming support (like SteamOS)
+      - steam
+      - gamescope
+      - mangohud
+
+      # Flatpak support (should already be there, but ensuring)
+      - flatpak
+
+    # Remove packages you don't want
+    remove: []
+
+  # ============================================
+  # DEFAULT FLATPAKS
+  # ============================================
+  # These get installed on first boot
+  - type: default-flatpaks
+    notify: true  # Notify user when installing
+    system:
+      install:
+        # Essential apps for beginners
+        - org.mozilla.firefox
+        - org.libreoffice.LibreOffice
+        - org.videolan.VLC
+        - org.gnome.Calculator
+        - org.kde.okular
+        - com.spotify.Client
+        - md.obsidian.Obsidian
+        # Communication
+        - org.signal.Signal
+        - com.discordapp.Discord
+      # Flatpak repos to add
+      repo-url: https://dl.flathub.org/repo/flathub.flatpakrepo
+      repo-name: flathub
+      repo-title: Flathub
+
+  # ============================================
+  # SYSTEM FILES
+  # ============================================
+  # Copy custom configuration files
+  - type: files
+    files:
+      # Custom configs go in recipes/files/
+      # Example: - source: usr
+      #          destination: /usr
+
+  # ============================================
+  # BRANDING & CUSTOMIZATION
+  # ============================================
+  - type: script
+    scripts:
+      # Custom setup scripts go here
+      # - setup-branding.sh

@@ -1,0 +1,10 @@
+# This file will contain your public key for image signing
+# Generate it using the BlueBuild workshop or manually with cosign:
+#
+# cosign generate-key-pair
+#
+# Then:
+# 1. Add the PRIVATE key as a GitHub secret named SIGNING_SECRET
+# 2. Replace this file with the contents of cosign.pub
+#
+# See: https://blue-build.org/how-to/cosign/

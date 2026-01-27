@@ -1,0 +1,17 @@
+# Build artifacts
+*.iso
+output/
+
+# Private keys - NEVER commit these
+cosign.key
+*.pem
+
+# Editor files
+.vscode/
+.idea/
+*.swp
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
