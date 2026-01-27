@@ -1,0 +1,20 @@
+# SPDX-License-Identifier: MIT
+# EasyLinux First-Boot Calamares Service
+
+[Unit]
+Description=EasyLinux First-Boot Setup Wizard
+After=graphical.target systemd-user-sessions.service
+Wants=graphical.target
+Conflicts=getty@tty1.service plymouth-quit.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/libexec/easylinux-firstboot/setup.sh
+StandardInput=tty
+StandardOutput=tty
+TTYPath=/dev/tty1
+TTYReset=yes
+TTYVHangup=yes
+
+[Install]
+WantedBy=graphical.target

@@ -1,0 +1,33 @@
+---
+componentName: easylinux
+
+strings:
+    productName:         "EasyLinux"
+    shortProductName:    "EasyLinux"
+    version:             "1.0"
+    shortVersion:        "1.0"
+    versionedName:       "EasyLinux 1.0"
+    shortVersionedName:  "EasyLinux 1.0"
+    bootloaderEntryName: "EasyLinux"
+    productUrl:          "https://github.com/Zuelow/easylinux"
+    supportUrl:          "https://github.com/Zuelow/easylinux/issues"
+    knownIssuesUrl:      "https://github.com/Zuelow/easylinux/issues"
+    releaseNotesUrl:     "https://github.com/Zuelow/easylinux/releases"
+    donateUrl:           ""
+
+images:
+    productLogo:         "logo.png"
+    productIcon:         "logo.png"
+    productWelcome:      "welcome.png"
+
+slideshowAPI: 2
+
+style:
+    SidebarBackground:   "#1a1a2e"
+    SidebarText:         "#FFFFFF"
+    SidebarTextSelect:   "#4CC2FF"
+    SidebarTextHighlight: "#4CC2FF"
+
+uploadServer:
+    type: ""
+    url: ""

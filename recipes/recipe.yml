@@ -38,6 +38,10 @@ modules:
       # Plymouth boot splash
       - plymouth-theme-spinner
 
+      # Calamares first-boot wizard
+      - calamares
+      - console-setup
+
   # ============================================
   # BRANDING & THEMES
   # ============================================
@@ -102,6 +106,24 @@ modules:
             sed -i 's/NAME=.*/NAME="EasyLinux"/' /usr/lib/os-release && \
             echo 'VARIANT="Repair Cafe Edition"' >> /usr/lib/os-release && \
             echo 'VARIANT_ID=repaircafe' >> /usr/lib/os-release
+
+  # ============================================
+  # CALAMARES FIRST-BOOT WIZARD
+  # ============================================
+  - type: containerfile
+    snippets:
+      # Copy Calamares configuration
+      - |
+        COPY calamares/settings.conf /usr/share/calamares-easylinux/settings.conf
+        COPY calamares/modules/ /usr/share/calamares-easylinux/modules/
+        COPY calamares/branding/ /usr/share/calamares-easylinux/branding/
+
+      # Install firstboot service and setup script
+      - |
+        COPY calamares/setup.sh /usr/libexec/easylinux-firstboot/setup.sh
+        COPY calamares/easylinux-firstboot.service /usr/lib/systemd/system/easylinux-firstboot.service
+        RUN chmod +x /usr/libexec/easylinux-firstboot/setup.sh && \
+            systemctl enable easylinux-firstboot.service
 
   # ============================================
   # DEFAULT FLATPAKS
