@@ -1,3 +1,4 @@
+# yaml-language-server: $schema=https://schema.blue-build.org/recipe-v1.json
 # EasyLinux - A beginner-friendly Fedora Atomic distribution
 # Based on Kinoite (KDE Plasma) with immutable root filesystem
 
@@ -44,15 +45,12 @@ modules:
       # Flatpak support (should already be there, but ensuring)
       - flatpak
 
-    # Remove packages you don't want
-    remove: []
-
   # ============================================
   # DEFAULT FLATPAKS
   # ============================================
   # These get installed on first boot
   - type: default-flatpaks
-    notify: true  # Notify user when installing
+    notify: true
     system:
       install:
         # Essential apps for beginners
@@ -66,25 +64,6 @@ modules:
         # Communication
         - org.signal.Signal
         - com.discordapp.Discord
-      # Flatpak repos to add
       repo-url: https://dl.flathub.org/repo/flathub.flatpakrepo
       repo-name: flathub
       repo-title: Flathub
-
-  # ============================================
-  # SYSTEM FILES
-  # ============================================
-  # Copy custom configuration files
-  - type: files
-    files:
-      # Custom configs go in recipes/files/
-      # Example: - source: usr
-      #          destination: /usr
-
-  # ============================================
-  # BRANDING & CUSTOMIZATION
-  # ============================================
-  - type: script
-    scripts:
-      # Custom setup scripts go here
-      # - setup-branding.sh
