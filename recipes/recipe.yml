@@ -34,24 +34,28 @@ modules:
   # ============================================
   # DEFAULT FLATPAKS
   # ============================================
-  # These get installed on first boot
+  # These get installed on first boot (v2 format)
   - type: default-flatpaks
-    notify: true
-    system:
-      install:
-        # Essential apps for beginners
-        - org.mozilla.firefox
-        - org.libreoffice.LibreOffice
-        - org.videolan.VLC
-        - org.gnome.Calculator
-        - org.kde.okular
-        - com.spotify.Client
-        - md.obsidian.Obsidian
-        # Communication
-        - org.signal.Signal
-        - com.discordapp.Discord
-        # Gaming - Steam as Flatpak for better compatibility
-        - com.valvesoftware.Steam
-      repo-url: https://dl.flathub.org/repo/flathub.flatpakrepo
-      repo-name: flathub
-      repo-title: Flathub
+    configurations:
+      - scope: system
+        repo:
+          name: flathub
+          title: Flathub
+          url: https://dl.flathub.org/repo/flathub.flatpakrepo
+        notify: true
+        install:
+          # Essential apps for beginners
+          - org.mozilla.firefox
+          - org.libreoffice.LibreOffice
+          - org.videolan.VLC
+          - org.gnome.Calculator
+          - org.kde.okular
+          - com.spotify.Client
+          - md.obsidian.Obsidian
+          # Communication
+          - org.signal.Signal
+          - com.discordapp.Discord
+          # Gaming - Steam as Flatpak for better compatibility
+          - com.valvesoftware.Steam
+          # Flatpak management tool
+          - io.github.flattool.Warehouse
