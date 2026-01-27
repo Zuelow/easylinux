@@ -3,6 +3,18 @@ set -euo pipefail
 
 echo "Setting Danish defaults..."
 
+# Set Danish locale
+cat > /etc/locale.conf << 'EOF'
+LANG=da_DK.UTF-8
+LC_MESSAGES=da_DK.UTF-8
+EOF
+
+# Set Danish console keymap
+cat > /etc/vconsole.conf << 'EOF'
+KEYMAP=dk
+FONT=eurlatgr
+EOF
+
 # Set timezone to Copenhagen
 ln -sf /usr/share/zoneinfo/Europe/Copenhagen /etc/localtime
 
@@ -16,7 +28,7 @@ Section "InputClass"
 EndSection
 EOF
 
-# Set default KDE Plasma keyboard layout
+# Set default KDE Plasma keyboard layout for new users
 mkdir -p /etc/skel/.config
 cat > /etc/skel/.config/kxkbrc << 'EOF'
 [Layout]

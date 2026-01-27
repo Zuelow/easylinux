@@ -1,24 +1,14 @@
 # yaml-language-server: $schema=https://schema.blue-build.org/recipe-v1.json
 # EasyLinux - A beginner-friendly Fedora Atomic distribution
-# Based on Kinoite (KDE Plasma) with immutable root filesystem
 # Danish localization included
 
 name: easylinux
 description: A beginner-friendly Linux distribution inspired by SteamOS
 
-# Base image: Kinoite is Fedora Atomic with KDE Plasma
 base-image: ghcr.io/ublue-os/kinoite-main
 image-version: latest
 
 modules:
-  # ============================================
-  # DANISH LOCALE FILES
-  # ============================================
-  - type: files
-    files:
-      - source: etc
-        destination: /etc
-
   # ============================================
   # PACKAGE MANAGEMENT
   # ============================================
@@ -41,7 +31,7 @@ modules:
       - mangohud
 
   # ============================================
-  # SET TIMEZONE TO COPENHAGEN
+  # DANISH LOCALIZATION
   # ============================================
   - type: script
     scripts:
