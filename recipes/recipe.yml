@@ -1,24 +1,33 @@
 # yaml-language-server: $schema=https://schema.blue-build.org/recipe-v1.json
 # EasyLinux - A beginner-friendly Fedora Atomic distribution
 # Based on Kinoite (KDE Plasma) with immutable root filesystem
+# Danish localization included
 
 name: easylinux
 description: A beginner-friendly Linux distribution inspired by SteamOS
 
 # Base image: Kinoite is Fedora Atomic with KDE Plasma
-# Using Universal Blue's image which includes better hardware support and codecs
 base-image: ghcr.io/ublue-os/kinoite-main
 image-version: latest
 
-# Build modules - executed in order
 modules:
+  # ============================================
+  # DANISH LOCALE FILES
+  # ============================================
+  - type: files
+    files:
+      - source: etc
+        destination: /etc
+
   # ============================================
   # PACKAGE MANAGEMENT
   # ============================================
   - type: rpm-ostree
-    # Install packages into the base image
-    # Note: ublue base already includes multimedia codecs
     install:
+      # Danish language support
+      - glibc-langpack-da
+      - langpacks-da
+
       # Useful CLI tools
       - htop
       - fastfetch
@@ -32,9 +41,15 @@ modules:
       - mangohud
 
   # ============================================
+  # SET TIMEZONE TO COPENHAGEN
+  # ============================================
+  - type: script
+    scripts:
+      - set-danish-defaults.sh
+
+  # ============================================
   # DEFAULT FLATPAKS
   # ============================================
-  # These get installed on first boot (v2 format)
   - type: default-flatpaks
     configurations:
       - scope: system
@@ -44,7 +59,6 @@ modules:
           url: https://dl.flathub.org/repo/flathub.flatpakrepo
         notify: true
         install:
-          # Essential apps for beginners
           - org.mozilla.firefox
           - org.libreoffice.LibreOffice
           - org.videolan.VLC
@@ -52,10 +66,7 @@ modules:
           - org.kde.okular
           - com.spotify.Client
           - md.obsidian.Obsidian
-          # Communication
           - org.signal.Signal
           - com.discordapp.Discord
-          # Gaming - Steam as Flatpak for better compatibility
           - com.valvesoftware.Steam
-          # Flatpak management tool
           - io.github.flattool.Warehouse
