@@ -4,10 +4,14 @@ on:
   # Manual trigger only - ISOs take a while to build
   workflow_dispatch:
     inputs:
-      image_name:
-        description: "Image name"
+      arch:
+        description: "Architecture"
         required: true
-        default: "easylinux"
+        default: "x86_64"
+        type: choice
+        options:
+          - x86_64
+          - aarch64
       image_tag:
         description: "Image tag"
         required: true
@@ -15,8 +19,8 @@ on:
 
 jobs:
   build-iso:
-    name: Build ISO
-    runs-on: ubuntu-latest
+    name: Build ISO (${{ inputs.arch }})
+    runs-on: ${{ inputs.arch == 'aarch64' && 'ubuntu-24.04-arm' || 'ubuntu-latest' }}
 
     permissions:
       contents: read
@@ -30,24 +34,32 @@ jobs:
         id: registry
         run: echo "IMAGE_REGISTRY=ghcr.io/${GITHUB_REPOSITORY_OWNER,,}" >> $GITHUB_OUTPUT
 
+      - name: Set image name
+        id: image
+        run: |
+          if [ "${{ inputs.arch }}" = "aarch64" ]; then
+            echo "IMAGE_NAME=easylinux-aarch64" >> $GITHUB_OUTPUT
+          else
+            echo "IMAGE_NAME=easylinux" >> $GITHUB_OUTPUT
+          fi
+
       - name: Build ISO
         uses: jasonn3/build-container-installer@main
         id: build
         with:
-          arch: x86_64
-          image_name: ${{ inputs.image_name }}
+          arch: ${{ inputs.arch }}
+          image_name: ${{ steps.image.outputs.IMAGE_NAME }}
           image_repo: ${{ steps.registry.outputs.IMAGE_REGISTRY }}
           image_tag: ${{ inputs.image_tag }}
           variant: Kinoite
           version: 43
-          iso_name: easylinux-${{ inputs.image_tag }}.iso
-          # Enable web UI for simpler installation experience
+          iso_name: easylinux-${{ inputs.arch }}-${{ inputs.image_tag }}.iso
           web_ui: true
 
       - name: Upload ISO as artifact
         uses: actions/upload-artifact@v4
         with:
-          name: easylinux-iso
+          name: easylinux-iso-${{ inputs.arch }}
           path: ${{ steps.build.outputs.iso_path }}
           retention-days: 7
           if-no-files-found: error

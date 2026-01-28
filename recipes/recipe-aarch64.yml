@@ -1,0 +1,160 @@
+# yaml-language-server: $schema=https://schema.blue-build.org/recipe-v1.json
+# EasyLinux - Repair Cafe Edition (aarch64/ARM64)
+# A beginner-friendly Fedora Atomic distribution for repair cafes and maker spaces
+
+name: easylinux-aarch64
+description: A beginner-friendly Linux distribution - Repair Cafe Edition (ARM64)
+
+base-image: quay.io/fedora/fedora-kinoite
+image-version: 43
+
+modules:
+  # ============================================
+  # SYSTEM PACKAGES
+  # ============================================
+  - type: rpm-ostree
+    install:
+      # Danish language support
+      - glibc-langpack-da
+      - langpacks-da
+
+      # CLI tools
+      - htop
+      - fastfetch
+      - fish
+      - vim-enhanced
+      - git
+
+      # Hardware support
+      - fwupd
+
+      # Gaming (ARM-compatible only)
+      - mangohud
+
+      # Theming
+      - papirus-icon-theme
+
+      # Plymouth boot splash
+      - plymouth-theme-spinner
+
+      # Calamares first-boot wizard
+      - calamares
+      - console-setup
+
+  # ============================================
+  # BRANDING & THEMES
+  # ============================================
+  - type: containerfile
+    snippets:
+      # Download wallpapers from Unsplash
+      - |
+        RUN mkdir -p /usr/share/backgrounds/easylinux && \
+            curl -sL "https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=3840&q=90" -o /usr/share/backgrounds/easylinux/workshop-tools.jpg && \
+            curl -sL "https://images.unsplash.com/photo-1530124566582-a618bc2615dc?w=3840&q=90" -o /usr/share/backgrounds/easylinux/electronics-repair.jpg && \
+            curl -sL "https://images.unsplash.com/photo-1504148455328-c376907d081c?w=3840&q=90" -o /usr/share/backgrounds/easylinux/soldering-work.jpg && \
+            curl -sL "https://images.unsplash.com/photo-1572981779307-38b8cabb2407?w=3840&q=90" -o /usr/share/backgrounds/easylinux/vintage-tools.jpg && \
+            chmod 644 /usr/share/backgrounds/easylinux/*.jpg
+
+      # Install Vapor theme (Steam Deck style) - without logos
+      - |
+        RUN mkdir -p /usr/share/color-schemes /usr/share/plasma/desktoptheme/Vapor /usr/share/plasma/look-and-feel/com.easylinux.vapor/contents/previews && \
+            curl -sL "https://steamdeck-packages.steamos.cloud/archlinux-mirror/jupiter-main/os/x86_64/steamdeck-kde-presets-0.29-1-any.pkg.tar.zst" -o /tmp/steamdeck.tar.zst && \
+            zstd -d /tmp/steamdeck.tar.zst && \
+            tar -xf /tmp/steamdeck.tar -C /tmp && \
+            cp /tmp/usr/share/color-schemes/Vapor.colors /usr/share/color-schemes/ && \
+            cp /tmp/usr/share/plasma/desktoptheme/Vapor/* /usr/share/plasma/desktoptheme/Vapor/ && \
+            rm -rf /tmp/steamdeck* /tmp/usr /tmp/etc
+
+      # Create EasyLinux Vapor look-and-feel (without Steam branding)
+      - |
+        RUN mkdir -p /usr/share/plasma/look-and-feel/com.easylinux.vapor/contents && \
+            printf '{\n  "KPackageStructure": "Plasma/LookAndFeel",\n  "KPlugin": {\n    "Id": "com.easylinux.vapor",\n    "Name": "EasyLinux Vapor",\n    "Description": "Steam Deck inspired theme for EasyLinux"\n  }\n}\n' > /usr/share/plasma/look-and-feel/com.easylinux.vapor/metadata.json && \
+            printf '[kdeglobals][General]\nColorScheme=Vapor\n\n[kdeglobals][Icons]\nTheme=Papirus-Dark\n\n[kdeglobals][KDE]\nLookAndFeelPackage=com.easylinux.vapor\n\n[plasmarc][Theme]\nname=Vapor\n' > /usr/share/plasma/look-and-feel/com.easylinux.vapor/contents/defaults
+
+      # Install Redmond 2K color scheme (Windows 2000 style)
+      - |
+        RUN printf '[ColorEffects:Disabled]\nColor=56,56,56\nColorAmount=0\nColorEffect=0\nContrastAmount=0.65\nContrastEffect=1\nIntensityAmount=0.1\nIntensityEffect=2\n\n[ColorEffects:Inactive]\nChangeSelectionColor=true\nColor=112,111,110\nColorAmount=0.025\nColorEffect=2\nContrastAmount=0.1\nContrastEffect=2\nEnable=false\n\n[Colors:Button]\nBackgroundAlternate=212,208,200\nBackgroundNormal=212,208,200\nDecorationFocus=0,0,128\nDecorationHover=10,36,106\nForegroundActive=0,0,0\nForegroundInactive=128,128,128\nForegroundLink=0,0,255\nForegroundNegative=255,0,0\nForegroundNeutral=255,128,0\nForegroundNormal=0,0,0\nForegroundPositive=0,128,0\nForegroundVisited=128,0,128\n\n[Colors:Selection]\nBackgroundAlternate=10,36,106\nBackgroundNormal=10,36,106\nDecorationFocus=10,36,106\nDecorationHover=10,36,106\nForegroundActive=255,255,255\nForegroundInactive=255,255,255\nForegroundLink=255,255,0\nForegroundNegative=255,0,0\nForegroundNeutral=255,128,0\nForegroundNormal=255,255,255\nForegroundPositive=0,255,0\nForegroundVisited=255,128,255\n\n[Colors:Tooltip]\nBackgroundAlternate=255,255,225\nBackgroundNormal=255,255,225\nForegroundNormal=0,0,0\n\n[Colors:View]\nBackgroundAlternate=245,245,245\nBackgroundNormal=255,255,255\nDecorationFocus=0,0,128\nDecorationHover=10,36,106\nForegroundActive=0,0,0\nForegroundInactive=128,128,128\nForegroundLink=0,0,255\nForegroundNegative=255,0,0\nForegroundNeutral=255,128,0\nForegroundNormal=0,0,0\nForegroundPositive=0,128,0\nForegroundVisited=128,0,128\n\n[Colors:Window]\nBackgroundAlternate=212,208,200\nBackgroundNormal=212,208,200\nDecorationFocus=0,0,128\nDecorationHover=10,36,106\nForegroundActive=0,0,0\nForegroundInactive=128,128,128\nForegroundLink=0,0,255\nForegroundNegative=255,0,0\nForegroundNeutral=255,128,0\nForegroundNormal=0,0,0\nForegroundPositive=0,128,0\nForegroundVisited=128,0,128\n\n[General]\nColorScheme=Redmond2K\nName=Redmond 2K\nshadeSortColumn=true\n\n[WM]\nactiveBackground=10,36,106\nactiveBlend=255,255,255\nactiveForeground=255,255,255\ninactiveBackground=128,128,128\ninactiveBlend=128,128,128\ninactiveForeground=212,208,200\n' > /usr/share/color-schemes/Redmond2K.colors
+
+      # Danish locale and timezone
+      - |
+        RUN echo "LANG=da_DK.UTF-8" > /etc/locale.conf && \
+            echo "KEYMAP=dk" > /etc/vconsole.conf && \
+            ln -sf /usr/share/zoneinfo/Europe/Copenhagen /etc/localtime && \
+            mkdir -p /etc/X11/xorg.conf.d && \
+            printf 'Section "InputClass"\n    Identifier "system-keyboard"\n    MatchIsKeyboard "on"\n    Option "XkbLayout" "dk"\nEndSection\n' > /etc/X11/xorg.conf.d/00-keyboard.conf
+
+      # KDE Plasma defaults - Vapor theme, Papirus icons
+      - |
+        RUN mkdir -p /etc/skel/.config && \
+            printf '[Layout]\nLayoutList=dk\nModel=pc105\nUse=true\n' > /etc/skel/.config/kxkbrc && \
+            printf '[General]\nColorScheme=Vapor\n\n[Icons]\nTheme=Papirus-Dark\n' > /etc/skel/.config/kdeglobals && \
+            printf '[Theme]\nname=Vapor\n' > /etc/skel/.config/plasmarc
+
+      # Configure SDDM login screen
+      - |
+        RUN mkdir -p /etc/sddm.conf.d && \
+            printf '[Theme]\nCurrent=breeze\n\n[General]\nInputMethod=\n' > /etc/sddm.conf.d/easylinux.conf
+
+      # Configure Plymouth boot splash
+      - |
+        RUN plymouth-set-default-theme spinner 2>/dev/null || true
+
+      # OS release branding
+      - |
+        RUN sed -i 's/PRETTY_NAME=.*/PRETTY_NAME="EasyLinux (Repair Cafe Edition)"/' /usr/lib/os-release && \
+            sed -i 's/NAME=.*/NAME="EasyLinux"/' /usr/lib/os-release && \
+            echo 'VARIANT="Repair Cafe Edition"' >> /usr/lib/os-release && \
+            echo 'VARIANT_ID=repaircafe' >> /usr/lib/os-release
+
+  # ============================================
+  # CALAMARES FIRST-BOOT WIZARD
+  # ============================================
+  - type: containerfile
+    snippets:
+      # Copy Calamares configuration
+      - |
+        COPY calamares/settings.conf /usr/share/calamares-easylinux/settings.conf
+        COPY calamares/modules/ /usr/share/calamares-easylinux/modules/
+        COPY calamares/branding/ /usr/share/calamares-easylinux/branding/
+
+      # Install firstboot service and setup script
+      - |
+        COPY calamares/setup.sh /usr/libexec/easylinux-firstboot/setup.sh
+        COPY calamares/easylinux-firstboot.service /usr/lib/systemd/system/easylinux-firstboot.service
+        RUN chmod +x /usr/libexec/easylinux-firstboot/setup.sh && \
+            systemctl enable easylinux-firstboot.service
+
+  # ============================================
+  # DEFAULT FLATPAKS
+  # ============================================
+  - type: default-flatpaks
+    configurations:
+      - scope: system
+        repo:
+          name: flathub
+          title: Flathub
+          url: https://dl.flathub.org/repo/flathub.flatpakrepo
+        notify: true
+        install:
+          # Essential apps
+          - org.mozilla.firefox
+          - org.libreoffice.LibreOffice
+          - org.videolan.VLC
+          - org.gnome.Calculator
+          - org.kde.okular
+
+          # Communication
+          - md.obsidian.Obsidian
+          - org.signal.Signal
+
+          # Utilities
+          - io.github.flattool.Warehouse
+          - com.github.tchx84.Flatseal
+
+          # Repair Cafe / Maker apps
+          - org.kicad.KiCad
+          - org.freecadweb.FreeCAD
+          - org.blender.Blender
+          - org.gimp.GIMP
+          - org.inkscape.Inkscape
+          - org.gnome.SimpleScan
