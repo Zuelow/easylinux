@@ -49,20 +49,20 @@ modules:
   # ============================================
   - type: containerfile
     snippets:
-      # Download repair cafe wallpapers from Unsplash
+      # Download repair cafe wallpapers from Unsplash to standard KDE location
       - |
-        RUN mkdir -p /usr/share/repaircafe/wallpapers && \
-            curl -sL "https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=3840&q=90" -o /usr/share/repaircafe/wallpapers/workshop-tools.jpg && \
-            curl -sL "https://images.unsplash.com/photo-1530124566582-a618bc2615dc?w=3840&q=90" -o /usr/share/repaircafe/wallpapers/electronics-repair.jpg && \
-            curl -sL "https://images.unsplash.com/photo-1504148455328-c376907d081c?w=3840&q=90" -o /usr/share/repaircafe/wallpapers/soldering-work.jpg && \
-            curl -sL "https://images.unsplash.com/photo-1572981779307-38b8cabb2407?w=3840&q=90" -o /usr/share/repaircafe/wallpapers/vintage-tools.jpg && \
-            curl -sL "https://images.unsplash.com/photo-1588508065123-287b28e013da?w=3840&q=90" -o /usr/share/repaircafe/wallpapers/multimeter.jpg && \
-            curl -sL "https://images.unsplash.com/photo-1518770660439-4636190af475?w=3840&q=90" -o /usr/share/repaircafe/wallpapers/circuit-board.jpg && \
-            curl -sL "https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?w=3840&q=90" -o /usr/share/repaircafe/wallpapers/workbench.jpg && \
-            curl -sL "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=3840&q=90" -o /usr/share/repaircafe/wallpapers/3d-printer.jpg && \
-            curl -sL "https://images.unsplash.com/photo-1581092160562-40aa08e78837?w=3840&q=90" -o /usr/share/repaircafe/wallpapers/maker-space.jpg && \
-            curl -sL "https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=3840&q=90" -o /usr/share/repaircafe/wallpapers/tool-wall.jpg && \
-            chmod 644 /usr/share/repaircafe/wallpapers/*.jpg
+        RUN mkdir -p /usr/share/wallpapers/RepairCafe && \
+            curl -sL "https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=3840&q=90" -o /usr/share/wallpapers/RepairCafe/workshop-tools.jpg && \
+            curl -sL "https://images.unsplash.com/photo-1530124566582-a618bc2615dc?w=3840&q=90" -o /usr/share/wallpapers/RepairCafe/electronics-repair.jpg && \
+            curl -sL "https://images.unsplash.com/photo-1504148455328-c376907d081c?w=3840&q=90" -o /usr/share/wallpapers/RepairCafe/soldering-work.jpg && \
+            curl -sL "https://images.unsplash.com/photo-1572981779307-38b8cabb2407?w=3840&q=90" -o /usr/share/wallpapers/RepairCafe/vintage-tools.jpg && \
+            curl -sL "https://images.unsplash.com/photo-1588508065123-287b28e013da?w=3840&q=90" -o /usr/share/wallpapers/RepairCafe/multimeter.jpg && \
+            curl -sL "https://images.unsplash.com/photo-1518770660439-4636190af475?w=3840&q=90" -o /usr/share/wallpapers/RepairCafe/circuit-board.jpg && \
+            curl -sL "https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?w=3840&q=90" -o /usr/share/wallpapers/RepairCafe/workbench.jpg && \
+            curl -sL "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=3840&q=90" -o /usr/share/wallpapers/RepairCafe/3d-printer.jpg && \
+            curl -sL "https://images.unsplash.com/photo-1581092160562-40aa08e78837?w=3840&q=90" -o /usr/share/wallpapers/RepairCafe/maker-space.jpg && \
+            curl -sL "https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=3840&q=90" -o /usr/share/wallpapers/RepairCafe/tool-wall.jpg && \
+            chmod 644 /usr/share/wallpapers/RepairCafe/*.jpg
 
       # Install full Steam Deck Vapor theme (complete look-and-feel)
       - |
@@ -72,8 +72,6 @@ modules:
             cp -r /tmp/usr/share/color-schemes/* /usr/share/color-schemes/ && \
             cp -r /tmp/usr/share/plasma/desktoptheme/* /usr/share/plasma/desktoptheme/ && \
             cp -r /tmp/usr/share/plasma/look-and-feel/* /usr/share/plasma/look-and-feel/ && \
-            mkdir -p /usr/share/wallpapers && \
-            cp -r /tmp/usr/share/wallpapers/* /usr/share/wallpapers/ && \
             rm -rf /tmp/steamdeck* /tmp/usr /tmp/etc
 
       # Install Redmond 2K color scheme (Windows 2000 style)
@@ -95,7 +93,8 @@ modules:
             printf '[General]\nColorScheme=Vapor\n\n[Icons]\nTheme=breeze-dark\n\n[KDE]\nLookAndFeelPackage=com.valve.vapor.desktop\nwidgetStyle=Breeze\n' > /etc/skel/.config/kdeglobals && \
             printf '[Theme]\nname=Vapor\n' > /etc/skel/.config/plasmarc && \
             printf '[org.kde.kdecoration2]\nlibrary=org.kde.breeze\ntheme=__aurorae__svg__ActiveAccentFrame\nButtonsOnLeft=\nButtonsOnRight=IAX\nCloseOnDoubleClickOnMenu=false\n\n[WindowSwitcher]\nLayoutName=org.kde.breeze.desktop\n\n[DesktopSwitcher]\nLayoutName=org.kde.breeze.desktop\n\n[Effect-overview]\nBorderActivate=9\n\n[Effect-windowview]\nBorderActivateAll=7\n\n[Plugins]\nblurEnabled=true\ncontrastEnabled=true\nslideEnabled=false\n\n[Windows]\nBorderlessMaximizedWindows=true\n' > /etc/skel/.config/kwinrc && \
-            printf '[KSplash]\nTheme=com.valve.vapor\n' > /etc/skel/.config/ksplashrc
+            printf '[KSplash]\nTheme=com.valve.vapor\n' > /etc/skel/.config/ksplashrc && \
+            printf '[Containments][1][Wallpaper][org.kde.image][General]\nImage=file:///usr/share/wallpapers/RepairCafe/electronics-repair.jpg\n' > /etc/skel/.config/plasma-org.kde.plasma.desktop-appletsrc
 
       # Configure SDDM login screen
       - |
