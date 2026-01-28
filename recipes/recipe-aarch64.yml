@@ -91,7 +91,8 @@ modules:
             printf '[Layout]\nLayoutList=dk\nModel=pc105\nUse=true\n' > /etc/skel/.config/kxkbrc && \
             printf '[General]\nColorScheme=Vapor\n\n[Icons]\nTheme=breeze-dark\n\n[KDE]\nLookAndFeelPackage=com.valve.vapor.desktop\nwidgetStyle=Breeze\n' > /etc/skel/.config/kdeglobals && \
             printf '[Theme]\nname=Vapor\n' > /etc/skel/.config/plasmarc && \
-            printf '[org.kde.kdecoration2]\nlibrary=org.kde.breeze\ntheme=Breeze\n' > /etc/skel/.config/kwinrc
+            printf '[org.kde.kdecoration2]\nlibrary=org.kde.breeze\ntheme=__aurorae__svg__ActiveAccentFrame\nButtonsOnLeft=\nButtonsOnRight=IAX\nCloseOnDoubleClickOnMenu=false\n\n[WindowSwitcher]\nLayoutName=org.kde.breeze.desktop\n\n[DesktopSwitcher]\nLayoutName=org.kde.breeze.desktop\n\n[Effect-overview]\nBorderActivate=9\n\n[Effect-windowview]\nBorderActivateAll=7\n\n[Plugins]\nblurEnabled=true\ncontrastEnabled=true\nslideEnabled=false\n\n[Windows]\nBorderlessMaximizedWindows=true\n' > /etc/skel/.config/kwinrc && \
+            printf '[KSplash]\nTheme=com.valve.vapor\n' > /etc/skel/.config/ksplashrc
 
       # Configure SDDM login screen
       - |
