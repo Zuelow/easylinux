@@ -54,12 +54,11 @@ modules:
       - sane-backends
       - simple-scan
 
-      # Multimedia codecs
+      # Multimedia codecs (ffmpeg already in base image)
       - gstreamer1-plugins-good
       - gstreamer1-plugins-bad-free
       - gstreamer1-plugins-ugly-free
       - gstreamer1-libav
-      - ffmpeg-free
 
       # Accessibility
       - orca
