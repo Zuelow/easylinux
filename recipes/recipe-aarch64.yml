@@ -55,21 +55,17 @@ modules:
             curl -sL "https://images.unsplash.com/photo-1572981779307-38b8cabb2407?w=3840&q=90" -o /usr/share/backgrounds/easylinux/vintage-tools.jpg && \
             chmod 644 /usr/share/backgrounds/easylinux/*.jpg
 
-      # Install Vapor theme (Steam Deck style) - without logos
+      # Install full Steam Deck Vapor theme (complete look-and-feel)
       - |
-        RUN mkdir -p /usr/share/color-schemes /usr/share/plasma/desktoptheme/Vapor /usr/share/plasma/look-and-feel/com.easylinux.vapor/contents/previews && \
-            curl -sL "https://steamdeck-packages.steamos.cloud/archlinux-mirror/jupiter-main/os/x86_64/steamdeck-kde-presets-0.29-1-any.pkg.tar.zst" -o /tmp/steamdeck.tar.zst && \
+        RUN curl -sL "https://steamdeck-packages.steamos.cloud/archlinux-mirror/jupiter-main/os/x86_64/steamdeck-kde-presets-0.29-1-any.pkg.tar.zst" -o /tmp/steamdeck.tar.zst && \
             zstd -d /tmp/steamdeck.tar.zst && \
             tar -xf /tmp/steamdeck.tar -C /tmp && \
-            cp /tmp/usr/share/color-schemes/Vapor.colors /usr/share/color-schemes/ && \
-            cp /tmp/usr/share/plasma/desktoptheme/Vapor/* /usr/share/plasma/desktoptheme/Vapor/ && \
+            cp -r /tmp/usr/share/color-schemes/* /usr/share/color-schemes/ && \
+            cp -r /tmp/usr/share/plasma/desktoptheme/* /usr/share/plasma/desktoptheme/ && \
+            cp -r /tmp/usr/share/plasma/look-and-feel/* /usr/share/plasma/look-and-feel/ && \
+            mkdir -p /usr/share/wallpapers && \
+            cp -r /tmp/usr/share/wallpapers/* /usr/share/wallpapers/ && \
             rm -rf /tmp/steamdeck* /tmp/usr /tmp/etc
-
-      # Create EasyLinux Vapor look-and-feel (without Steam branding)
-      - |
-        RUN mkdir -p /usr/share/plasma/look-and-feel/com.easylinux.vapor/contents && \
-            printf '{\n  "KPackageStructure": "Plasma/LookAndFeel",\n  "KPlugin": {\n    "Id": "com.easylinux.vapor",\n    "Name": "EasyLinux Vapor",\n    "Description": "Steam Deck inspired theme for EasyLinux"\n  }\n}\n' > /usr/share/plasma/look-and-feel/com.easylinux.vapor/metadata.json && \
-            printf '[kdeglobals][General]\nColorScheme=Vapor\n\n[kdeglobals][Icons]\nTheme=Papirus-Dark\n\n[kdeglobals][KDE]\nLookAndFeelPackage=com.easylinux.vapor\n\n[plasmarc][Theme]\nname=Vapor\n' > /usr/share/plasma/look-and-feel/com.easylinux.vapor/contents/defaults
 
       # Install Redmond 2K color scheme (Windows 2000 style)
       - |
@@ -83,12 +79,13 @@ modules:
             mkdir -p /etc/X11/xorg.conf.d && \
             printf 'Section "InputClass"\n    Identifier "system-keyboard"\n    MatchIsKeyboard "on"\n    Option "XkbLayout" "dk"\nEndSection\n' > /etc/X11/xorg.conf.d/00-keyboard.conf
 
-      # KDE Plasma defaults - Vapor theme, Papirus icons
+      # KDE Plasma defaults - Full Steam Deck Vapor look-and-feel
       - |
         RUN mkdir -p /etc/skel/.config && \
             printf '[Layout]\nLayoutList=dk\nModel=pc105\nUse=true\n' > /etc/skel/.config/kxkbrc && \
-            printf '[General]\nColorScheme=Vapor\n\n[Icons]\nTheme=Papirus-Dark\n' > /etc/skel/.config/kdeglobals && \
-            printf '[Theme]\nname=Vapor\n' > /etc/skel/.config/plasmarc
+            printf '[General]\nColorScheme=Vapor\n\n[Icons]\nTheme=breeze-dark\n\n[KDE]\nLookAndFeelPackage=com.valve.vapor.desktop\nwidgetStyle=Breeze\n' > /etc/skel/.config/kdeglobals && \
+            printf '[Theme]\nname=Vapor\n' > /etc/skel/.config/plasmarc && \
+            printf '[org.kde.kdecoration2]\nlibrary=org.kde.breeze\ntheme=Breeze\n' > /etc/skel/.config/kwinrc
 
       # Configure SDDM login screen
       - |
