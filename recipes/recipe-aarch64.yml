@@ -44,6 +44,26 @@ modules:
       - calamares
       - console-setup
 
+      # Printing support
+      - cups
+      - cups-filters
+      - system-config-printer
+      - hplip
+      - gutenprint
+      - sane-backends
+      - simple-scan
+
+      # Multimedia codecs
+      - gstreamer1-plugins-good
+      - gstreamer1-plugins-bad-free
+      - gstreamer1-plugins-ugly-free
+      - gstreamer1-libav
+      - ffmpeg-free
+
+      # Accessibility
+      - orca
+      - espeak-ng
+
   # ============================================
   # BRANDING & THEMES
   # ============================================
@@ -112,6 +132,56 @@ modules:
             echo 'VARIANT="Repair Cafe Edition"' >> /usr/lib/os-release && \
             echo 'VARIANT_ID=repaircafe' >> /usr/lib/os-release
 
+      # Firefox policies - uBlock Origin and useful bookmarks
+      - |
+        RUN mkdir -p /etc/firefox/policies && \
+            printf '{\n  "policies": {\n    "ExtensionSettings": {\n      "uBlock0@raymondhill.net": {\n        "install_url": "https://addons.mozilla.org/firefox/downloads/latest/ublock-origin/latest.xpi",\n        "installation_mode": "normal_installed"\n      }\n    },\n    "DisplayBookmarksToolbar": "always",\n    "NoDefaultBookmarks": true,\n    "Bookmarks": [\n      {"Title": "iFixit Repair Guides", "URL": "https://www.ifixit.com/Guide", "Placement": "toolbar"},\n      {"Title": "Repair Cafe", "URL": "https://www.repaircafe.org/", "Placement": "toolbar"},\n      {"Title": "KDE User Guide", "URL": "https://userbase.kde.org/", "Placement": "toolbar"},\n      {"Title": "Flathub Apps", "URL": "https://flathub.org/", "Placement": "toolbar"}\n    ],\n    "Homepage": {\n      "URL": "https://www.repaircafe.org/",\n      "StartPage": "homepage"\n    }\n  }\n}\n' > /etc/firefox/policies/policies.json
+
+      # Desktop icons for easy access
+      - |
+        RUN mkdir -p /etc/skel/Desktop && \
+            printf '[Desktop Entry]\nVersion=1.0\nType=Link\nName=Documents\nIcon=folder-documents\nURL=$HOME/Documents\n' > /etc/skel/Desktop/documents.desktop && \
+            printf '[Desktop Entry]\nVersion=1.0\nType=Application\nName=App Store\nComment=Install and manage applications\nIcon=system-software-install\nExec=plasma-discover\nTerminal=false\nCategories=System;\n' > /etc/skel/Desktop/appstore.desktop && \
+            printf '[Desktop Entry]\nVersion=1.0\nType=Application\nName=System Rollback\nComment=Restore previous system version if something breaks\nIcon=system-reboot\nExec=konsole -e bash -c \"echo EasyLinux System Rollback; echo =====================; echo; echo This will restore your system to the previous version.; echo Your files will NOT be affected.; echo; read -p Press_Enter_to_continue...; sudo rpm-ostree rollback; echo; echo Done! Please reboot to complete the rollback.; read -p Press_Enter_to_close...\"\nTerminal=false\nCategories=System;\n' > /etc/skel/Desktop/rollback.desktop && \
+            chmod +x /etc/skel/Desktop/*.desktop
+
+      # Night Light (blue light filter) enabled by default
+      - |
+        RUN printf '[NightColor]\nActive=true\nMode=Times\nNightTemperature=4500\nEveningBeginFixed=2000\nMorningBeginFixed=0600\n' > /etc/skel/.config/kwinrc.nightlight && \
+            cat /etc/skel/.config/kwinrc.nightlight >> /etc/skel/.config/kwinrc && \
+            rm /etc/skel/.config/kwinrc.nightlight
+
+      # Larger fonts and icons for accessibility (11pt instead of 10pt)
+      - |
+        RUN sed -i 's/\[General\]/[General]\nfont=Noto Sans,11,-1,5,50,0,0,0,0,0\nfixed=Hack,11,-1,5,50,0,0,0,0,0\nsmallestReadableFont=Noto Sans,9,-1,5,50,0,0,0,0,0\ntoolBarFont=Noto Sans,10,-1,5,50,0,0,0,0,0\nmenuFont=Noto Sans,11,-1,5,50,0,0,0,0,0\n/' /etc/skel/.config/kdeglobals
+
+      # Enable automatic Flatpak updates
+      - |
+        RUN mkdir -p /etc/systemd/user && \
+            printf '[Unit]\nDescription=Update Flatpak applications\nWants=network-online.target\nAfter=network-online.target\n\n[Service]\nType=oneshot\nExecStart=/usr/bin/flatpak update -y --noninteractive\n\n[Install]\nWantedBy=default.target\n' > /etc/systemd/user/flatpak-update.service && \
+            printf '[Unit]\nDescription=Daily Flatpak update\n\n[Timer]\nOnCalendar=daily\nPersistent=true\nRandomizedDelaySec=3600\n\n[Install]\nWantedBy=timers.target\n' > /etc/systemd/user/flatpak-update.timer && \
+            mkdir -p /etc/skel/.config/systemd/user/timers.target.wants && \
+            ln -sf /etc/systemd/user/flatpak-update.timer /etc/skel/.config/systemd/user/timers.target.wants/flatpak-update.timer
+
+      # Enable automatic system updates (rpm-ostree)
+      - |
+        RUN systemctl enable rpm-ostreed-automatic.timer
+
+      # Welcome HTML page
+      - |
+        RUN mkdir -p /usr/share/easylinux && \
+            printf '<!DOCTYPE html>\n<html lang="da">\n<head>\n<meta charset="UTF-8">\n<title>Velkommen til EasyLinux</title>\n<style>\nbody{font-family:sans-serif;max-width:800px;margin:50px auto;padding:20px;background:linear-gradient(135deg,#1a1a2e,#16213e);color:#fff;min-height:100vh;}\nh1{color:#7dd3fc;text-align:center;}\n.card{background:rgba(255,255,255,0.1);border-radius:15px;padding:20px;margin:20px 0;}\n.card h2{color:#7dd3fc;margin-top:0;}\na{color:#7dd3fc;}\n.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:15px;}\n.btn{display:block;background:#7dd3fc;color:#1a1a2e;text-decoration:none;padding:15px;border-radius:10px;text-align:center;font-weight:bold;}\n.btn:hover{background:#fff;}\n</style>\n</head>\n<body>\n<h1>Velkommen til EasyLinux!</h1>\n<div class="card">\n<h2>Kom godt i gang</h2>\n<p>EasyLinux er designet til at vaere nem at bruge. Her er nogle tips:</p>\n<ul>\n<li><strong>Apps:</strong> Klik paa App Store ikonet paa skrivebordet for at installere programmer</li>\n<li><strong>Filer:</strong> Dine dokumenter gemmes i Dokumenter-mappen</li>\n<li><strong>Opdateringer:</strong> Systemet opdaterer sig selv automatisk</li>\n<li><strong>Problemer?</strong> Brug System Rollback ikonet til at gaa tilbage til en tidligere version</li>\n</ul>\n</div>\n<div class="card">\n<h2>Nyttige links</h2>\n<div class="grid">\n<a href="https://www.repaircafe.org/" class="btn">Repair Cafe</a>\n<a href="https://www.ifixit.com/Guide" class="btn">iFixit Guides</a>\n<a href="https://flathub.org/" class="btn">Find Apps</a>\n<a href="https://userbase.kde.org/" class="btn">KDE Hjaelp</a>\n</div>\n</div>\n<div class="card">\n<h2>Tastaturgenveje</h2>\n<ul>\n<li><strong>Super (Windows-tast):</strong> Aaben programmenuen</li>\n<li><strong>Super + E:</strong> Aaben filhaandtering</li>\n<li><strong>Alt + Tab:</strong> Skift mellem vinduer</li>\n<li><strong>Super + D:</strong> Vis skrivebord</li>\n</ul>\n</div>\n</body>\n</html>\n' > /usr/share/easylinux/welcome.html
+
+      # Welcome desktop icon
+      - |
+        RUN printf '[Desktop Entry]\nVersion=1.0\nType=Application\nName=Velkommen til EasyLinux\nComment=Getting started guide\nIcon=help-contents\nExec=xdg-open /usr/share/easylinux/welcome.html\nTerminal=false\nCategories=Documentation;\n' > /etc/skel/Desktop/welcome.desktop && \
+            chmod +x /etc/skel/Desktop/welcome.desktop
+
+      # Autostart welcome page on first login
+      - |
+        RUN mkdir -p /etc/skel/.config/autostart && \
+            printf '[Desktop Entry]\nVersion=1.0\nType=Application\nName=EasyLinux Welcome\nExec=sh -c "if [ ! -f ~/.easylinux-welcomed ]; then xdg-open /usr/share/easylinux/welcome.html && touch ~/.easylinux-welcomed; fi"\nHidden=false\nNoDisplay=true\nX-GNOME-Autostart-enabled=true\n' > /etc/skel/.config/autostart/easylinux-welcome.desktop
+
   # ============================================
   # CALAMARES FIRST-BOOT WIZARD
   # ============================================
@@ -156,6 +226,9 @@ modules:
           # Utilities
           - io.github.flattool.Warehouse
           - com.github.tchx84.Flatseal
+
+          # Backup solution
+          - org.gnome.World.PikaBackup
 
           # Repair Cafe / Maker apps
           - org.kicad.KiCad
