@@ -52,18 +52,18 @@ modules:
     snippets:
       # Download repair cafe wallpapers from Unsplash
       - |
-        RUN mkdir -p /usr/share/backgrounds/easylinux && \
-            curl -sL "https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=3840&q=90" -o /usr/share/backgrounds/easylinux/workshop-tools.jpg && \
-            curl -sL "https://images.unsplash.com/photo-1530124566582-a618bc2615dc?w=3840&q=90" -o /usr/share/backgrounds/easylinux/electronics-repair.jpg && \
-            curl -sL "https://images.unsplash.com/photo-1504148455328-c376907d081c?w=3840&q=90" -o /usr/share/backgrounds/easylinux/soldering-work.jpg && \
-            curl -sL "https://images.unsplash.com/photo-1572981779307-38b8cabb2407?w=3840&q=90" -o /usr/share/backgrounds/easylinux/vintage-tools.jpg && \
-            curl -sL "https://images.unsplash.com/photo-1588508065123-287b28e013da?w=3840&q=90" -o /usr/share/backgrounds/easylinux/multimeter.jpg && \
-            curl -sL "https://images.unsplash.com/photo-1518770660439-4636190af475?w=3840&q=90" -o /usr/share/backgrounds/easylinux/circuit-board.jpg && \
-            curl -sL "https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?w=3840&q=90" -o /usr/share/backgrounds/easylinux/workbench.jpg && \
-            curl -sL "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=3840&q=90" -o /usr/share/backgrounds/easylinux/3d-printer.jpg && \
-            curl -sL "https://images.unsplash.com/photo-1581092160562-40aa08e78837?w=3840&q=90" -o /usr/share/backgrounds/easylinux/maker-space.jpg && \
-            curl -sL "https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=3840&q=90" -o /usr/share/backgrounds/easylinux/tool-wall.jpg && \
-            chmod 644 /usr/share/backgrounds/easylinux/*.jpg
+        RUN mkdir -p /usr/share/repaircafe/wallpapers && \
+            curl -sL "https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=3840&q=90" -o /usr/share/repaircafe/wallpapers/workshop-tools.jpg && \
+            curl -sL "https://images.unsplash.com/photo-1530124566582-a618bc2615dc?w=3840&q=90" -o /usr/share/repaircafe/wallpapers/electronics-repair.jpg && \
+            curl -sL "https://images.unsplash.com/photo-1504148455328-c376907d081c?w=3840&q=90" -o /usr/share/repaircafe/wallpapers/soldering-work.jpg && \
+            curl -sL "https://images.unsplash.com/photo-1572981779307-38b8cabb2407?w=3840&q=90" -o /usr/share/repaircafe/wallpapers/vintage-tools.jpg && \
+            curl -sL "https://images.unsplash.com/photo-1588508065123-287b28e013da?w=3840&q=90" -o /usr/share/repaircafe/wallpapers/multimeter.jpg && \
+            curl -sL "https://images.unsplash.com/photo-1518770660439-4636190af475?w=3840&q=90" -o /usr/share/repaircafe/wallpapers/circuit-board.jpg && \
+            curl -sL "https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?w=3840&q=90" -o /usr/share/repaircafe/wallpapers/workbench.jpg && \
+            curl -sL "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=3840&q=90" -o /usr/share/repaircafe/wallpapers/3d-printer.jpg && \
+            curl -sL "https://images.unsplash.com/photo-1581092160562-40aa08e78837?w=3840&q=90" -o /usr/share/repaircafe/wallpapers/maker-space.jpg && \
+            curl -sL "https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=3840&q=90" -o /usr/share/repaircafe/wallpapers/tool-wall.jpg && \
+            chmod 644 /usr/share/repaircafe/wallpapers/*.jpg
 
       # Install full Steam Deck Vapor theme (complete look-and-feel)
       - |
