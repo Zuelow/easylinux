@@ -35,6 +35,9 @@ modules:
       # Theming
       - papirus-icon-theme
 
+      # KWin X11 for proper window decorations
+      - kwin-x11
+
       # Plymouth boot splash
       - plymouth-theme-spinner
 
